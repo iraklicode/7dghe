@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>7 დღე</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Georgian:wght@400;500;600;700&family=Noto+Sans+Georgian:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0b08;
+    --card: rgba(28, 21, 15, .82);
+    --gold: #d9ad5b;
+    --gold-2: #f1d08a;
+    --gold-dim: #7a5d2e;
+    --line: #5a4424;
+    --red: #7d1f1c;
+    --cream: #f3e6cf;
+    --muted: #a8926f;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    min-height: 100vh;
+    color: var(--cream);
+    font-family: "Noto Sans Georgian", system-ui, sans-serif;
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(ellipse 80% 45% at 50% 18%, rgba(160, 110, 40, .18), transparent 70%),
+      radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.65) 100%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 2px, transparent 2px 7px),
+      linear-gradient(180deg, #17110b, #0b0806);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 44px 18px 60px; text-align: center; }
+
+  /* ── Avatar ── */
+  .avatar {
+    width: 190px; height: 190px; margin: 0 auto 30px;
+    border-radius: 50%; padding: 5px;
+    background: conic-gradient(from 200deg, var(--red), var(--gold-2), var(--gold), #8a5a22, var(--red));
+    box-shadow: 0 0 0 1px rgba(241,208,138,.25), 0 10px 50px rgba(217,173,91,.25);
+  }
+  .avatar img {
+    width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;
+    border: 3px solid #1a120b;
+  }
+
+  /* ── Title ── */
+  h1 {
+    font-family: "Noto Serif Georgian", serif;
+    font-weight: 600; font-size: clamp(22px, 6.4vw, 30px); line-height: 1.45;
+    background: linear-gradient(180deg, var(--gold-2), var(--gold) 60%, #b98a3c);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    margin-bottom: 20px;
+  }
+  .quote {
+    font-family: "Noto Serif Georgian", serif; font-style: italic;
+    color: var(--muted); font-size: clamp(14px, 3.9vw, 16px); line-height: 1.6;
+    max-width: 440px; margin: 0 auto 38px;
+  }
+  .hint { color: var(--gold); font-size: 16px; margin-bottom: 18px; }
+  .hint span { font-size: 22px; margin-left: 8px; vertical-align: -2px; }
+
+  /* ── Cards ── */
+  .list { display: flex; flex-direction: column; gap: 16px; text-align: left; }
+  .card {
+    position: relative; display: flex; align-items: center; gap: 22px;
+    width: 100%; padding: 14px 18px 14px 20px;
+    background: var(--card);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    color: inherit; font: inherit; cursor: pointer; text-align: left;
+    overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(241,208,138,.06), 0 6px 24px rgba(0,0,0,.35);
+    transition: border-color .25s, transform .25s, box-shadow .25s;
+  }
+  .card::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: linear-gradient(180deg, #a3302a, var(--red));
+  }
+  .card:hover {
+    border-color: var(--gold-dim); transform: translateY(-2px);
+    box-shadow: inset 0 1px 0 rgba(241,208,138,.1), 0 10px 30px rgba(0,0,0,.45);
+  }
+
+  .thumb {
+    position: relative; flex-shrink: 0;
+    width: 124px; height: 82px; border-radius: 10px; overflow: hidden;
+    background: #1d150e center / cover no-repeat;
+    border: 1px solid rgba(217,173,91,.35);
+  }
+  /* YouTube-ის თამბნეილს ვერტიკალურ ვიდეოზე გვერდებზე შავი ზოლები აქვს — ვაჭრით */
+  .vertical-thumbs .thumb { background-size: 215% auto; background-position: center 35%; }
+  /* საკუთარი ფოტო — ვერტიკალური, ისე როგორც არის */
+  .thumb.photo, .vertical-thumbs .thumb.photo,
+  .card.intro-card .thumb.photo {
+    width: 78px; height: auto; aspect-ratio: 9 / 16;
+    background-size: cover; background-position: center;
+  }
+  .thumb::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.18); }
+  .thumb .ico {
+    position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; color: #fff;
+  }
+  .thumb .ico svg { width: 26px; height: 26px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.7)); }
+  .card.done .ico { color: var(--gold-2); }
+
+  .text { flex: 1; min-width: 0; }
+  .name {
+    font-family: "Noto Serif Georgian", serif;
+    font-size: clamp(16px, 4.5vw, 20px); font-weight: 500; color: var(--cream);
+    letter-spacing: .01em; line-height: 1.4;
+  }
+  .status { font-size: 13px; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .status:empty { display: none; }
+
+  @media (max-width: 400px) {
+    .card { gap: 16px; padding: 12px 14px 12px 16px; }
+    .thumb { width: 104px; height: 70px; }
+  }
+
+  /* ── Intro — იგივე ბარათი, ასიმეტრიული ფორმით ── */
+  .card.intro-card {
+    flex-direction: row-reverse; gap: 20px;
+    padding: 18px 22px 18px 24px;
+    border-color: var(--gold-dim);
+    border-radius: 34px 8px 34px 8px;
+    box-shadow: inset 0 1px 0 rgba(241,208,138,.1), 0 10px 34px rgba(0,0,0,.45), 0 0 34px rgba(217,173,91,.08);
+  }
+  .card.intro-card::before { left: auto; right: 0; } /* წითელი ზოლი მარჯვნივ */
+  .card.intro-card .thumb {
+    width: 138px; height: 92px;
+    border-radius: 22px 6px 22px 6px;
+    border-color: rgba(241,208,138,.55);
+  }
+  .card.intro-card .name { color: var(--gold-2); }
+  .card.intro-card .thumb.photo { width: 90px; border-radius: 20px 6px 20px 6px; }
+  @media (max-width: 400px) {
+    .card.intro-card { padding: 16px 18px 16px 18px; }
+    .card.intro-card .thumb { width: 116px; height: 80px; }
+  }
+
+  /* ჩარჩო: უნახავი — წითელი, ნანახი — მწვანე */
+  .card, .card.intro-card { border: 1.5px solid #9b2d26; }
+  .card:hover { border-color: #c23a31; }
+  .card.done, .card.done.intro-card { border-color: #3f9a55; }
+  .card.done:hover { border-color: #52b86a; }
+  .card.done::before { background: linear-gradient(180deg, #52b86a, #2f7a42); }
+  .card.done .status, .card.done .ico { color: #6fcf86; }
+  /* უნახავის თამბნეილი ბუნდოვანია (▶ ზემოდან მკვეთრად რჩება) */
+  .thumb {
+    isolation: isolate;
+    -webkit-mask-image: -webkit-radial-gradient(white, black); /* Safari: ბუნდოვანი ფენა მომრგვალებულ კუთხეებში ჩაჭრას */
+  }
+  .card:not(.done) .thumb::before {
+    content: ""; position: absolute; inset: -14px;
+    background: inherit; filter: blur(7px);
+  }
+  .card:not(.done) .thumb::after { background: rgba(0,0,0,.25); }
+
+  .ornament {
+    display: flex; align-items: center; gap: 14px;
+    margin: 40px 0 22px; color: var(--gold);
+    font-family: "Noto Serif Georgian", serif; font-size: 15px; letter-spacing: .12em;
+  }
+  .ornament::before, .ornament::after {
+    content: ""; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim));
+  }
+  .ornament::after { background: linear-gradient(90deg, var(--gold-dim), transparent); }
+  .ornament span::before, .ornament span::after { content: "✦"; font-size: 10px; margin: 0 10px; opacity: .7; }
+
+  /* ── Player modal ── */
+  .modal {
+    position: fixed; inset: 0; z-index: 10;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+    background: rgba(8, 6, 4, .94);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+  .modal.show { display: flex; }
+  .modal-head {
+    width: min(100%, calc(80vh * 9 / 16));
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    margin-bottom: 14px;
+  }
+  .modal-head h2 { font-family: "Noto Serif Georgian", serif; font-weight: 500; font-size: 18px; line-height: 1.4; color: var(--gold-2); }
+  .modal-head small { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .close {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(255,255,255,.06); border: 1px solid var(--line);
+    color: var(--cream); cursor: pointer; display: grid; place-items: center;
+  }
+  .close svg { width: 18px; height: 18px; }
+  .frame {
+    position: relative; width: min(100%, calc(80vh * 9 / 16)); aspect-ratio: 9 / 16;
+    background: #000; border-radius: var(--radius); overflow: hidden;
+    border: 1px solid var(--line); box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  }
+  .frame.wide { aspect-ratio: 16 / 9; width: min(100%, 900px); }
+  .frame iframe, .frame video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .soon { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="avatar"><img src="IMG_1829.JPG.jpeg" alt=""></div>
+  <h1>7 დღე... 7 კითხვა...<br>7 გაცნობიერება... 7 ნაბიჯი</h1>
+  <p class="quote">„სასუფეველი ცათაჲ იიძულების და ყოველნი იძულებით მიიტაცებენ მას“ (მათე 11:12)</p>
+  <div class="hint">დააჭირე აქ<span>👇</span></div>
+  <div id="intro"></div>
+  <div class="ornament"><span>7 დღე</span></div>
+  <div class="list" id="list"></div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-head">
+    <div><h2 id="mTitle"></h2><small id="mSub"></small></div>
+    <button class="close" id="close" aria-label="დახურვა">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="frame" id="frame"></div>
+</div>
+
+<script>
+  // ── პარამეტრები ─────────────────────────────────────────
+  // ვიდეოები ვერტიკალურია? (true = 9:16, false = 16:9)
+  const VERTICAL = true;
+
+  // შესავალი
+  // thumb = თამბნეილის ფოტო ფოლდერიდან (თუ არ არის, YouTube-ის სურათს იღებს)
+  const INTRO = { name: "შესავალი - ინსტრუქცია", src: "https://youtu.be/l2oexGx8h-w", thumb: "shesavali.jpeg" };
+
+  // 7 დღე (სათაურები YouTube-იდან; mp4 ფაილი ან YouTube/Vimeo ბმული). ცარიელი src = „მალე დაემატება“
+  const DAYS = [
+    { name: "დღე პირველი - კონტროლის დაბრუნება", src: "https://youtu.be/n8_gj0UApBo", thumb: "day1.jpeg" },
+    { name: "დღე მეორე - ენერგიის მართვა",       src: "https://youtu.be/rqi5JyqyBFk", thumb: "day2.jpeg" },
+    { name: "დღე მესამე",   src: "", thumb: "afad.jpeg" },
+    { name: "დღე მეოთხე",   src: "", thumb: "day4.jpeg" },
+    { name: "დღე მეხუთე",   src: "", thumb: "husif.jpeg" },
+    { name: "დღე მეექვსე",  src: "", thumb: "gvhbhuij.jpeg" },
+    { name: "დღე მეშვიდე",  src: "", thumb: "fcghguhijo.jpeg" },
+  ];
+
+  const STORAGE_KEY = "course_progress_v2"; // ნომრის შეცვლა ყველას პროგრესს ანულებს
+  // ────────────────────────────────────────────────────────
+
+  const ICON = {
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+    done: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5L20 7"/></svg>',
+  };
+
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (s && typeof s === "object") return { opened: s.opened || {}, introSeen: !!s.introSeen };
+    } catch (e) {}
+    return { opened: {}, introSeen: false };
+  }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  const state = load();
+  const $ = id => document.getElementById(id);
+  const listEl = $("list"), modalEl = $("modal"), frameEl = $("frame");
+  frameEl.classList.toggle("wide", !VERTICAL);
+  listEl.classList.toggle("vertical-thumbs", VERTICAL);
+
+  // i = -1 შესავალია, 0..6 — დღეები
+  const item = i => i === -1 ? INTRO : DAYS[i];
+
+  const ytId = src => ((src || "").match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/) || [])[1];
+
+  function embed(src) {
+    if (!src) return `<div class="soon">ვიდეო მალე დაემატება</div>`;
+    const yt = ytId(src);
+    if (yt) return `<iframe src="https://www.youtube-nocookie.com/embed/${yt}?rel=0&modestbranding=1&autoplay=1&playsinline=1" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+    const vm = src.match(/vimeo\.com\/(\d+)/);
+    if (vm) return `<iframe src="https://player.vimeo.com/video/${vm[1]}?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+    return `<video src="${src}" controls autoplay playsinline controlsList="nodownload" oncontextmenu="return false"></video>`;
+  }
+
+  function openItem(i) {
+    if (i === -1) state.introSeen = true;
+    else if (!state.opened[i]) state.opened[i] = Date.now();
+    save();
+    const it = item(i);
+    $("mTitle").textContent = it.name;
+    $("mSub").textContent = it.title || "";
+    frameEl.innerHTML = embed(it.src);
+    modalEl.classList.add("show");
+    document.body.style.overflow = "hidden";
+    render();
+  }
+  function closeModal() {
+    modalEl.classList.remove("show");
+    frameEl.innerHTML = "";
+    document.body.style.overflow = "";
+  }
+  $("close").onclick = closeModal;
+  modalEl.addEventListener("click", e => { if (e.target === modalEl) closeModal(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+  // ბარათები ერთხელ იქმნება, შემდეგ მხოლოდ სტატუსები ახლდება
+  const cardHtml = i => {
+    const it = item(i), id = ytId(it.src);
+    const bg = it.thumb ? ` style="background-image:url('${it.thumb}')"`
+      : id ? ` style="background-image:url('https://i.ytimg.com/vi/${id}/hqdefault.jpg')"` : "";
+    return `<button class="card" data-i="${i}"><span class="thumb${it.thumb ? " photo" : ""}"${bg}><span class="ico"></span></span><span class="text"><div class="name">${item(i).name}</div><div class="status"></div></span></button>`;
+  };
+  $("intro").innerHTML = cardHtml(-1);
+  $("intro").classList.toggle("vertical-thumbs", VERTICAL);
+  listEl.innerHTML = DAYS.map((_, i) => cardHtml(i)).join("");
+  const cards = [...document.querySelectorAll("[data-i]")];
+  document.addEventListener("click", e => {
+    const c = e.target.closest("[data-i]");
+    if (c) openItem(Number(c.dataset.i));
+  });
+
+  function set(el, prop, val) { if (el[prop] !== val) el[prop] = val; }
+
+  function render() {
+    cards.forEach(card => {
+      const i = Number(card.dataset.i);
+      const done = i === -1 ? state.introSeen : !!state.opened[i];
+      set(card, "className", (i === -1 ? "card intro-card" : "card") + (done ? " done" : ""));
+      const ico = done ? ICON.done : ICON.play;
+      const icoEl = card.querySelector(".ico");
+      if (icoEl.dataset.v !== ico) { icoEl.innerHTML = ico; icoEl.dataset.v = ico; }
+      set(card.querySelector(".status"), "textContent", done ? "ნანახი" : "");
+    });
+  }
+
+  render();
+</script>
+</body>
+</html>
