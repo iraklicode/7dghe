@@ -161,6 +161,7 @@
   .card:not(.done) .thumb::after { background: rgba(0,0,0,.25); }
 
   /* ── შეხვედრის სრული ვიდეო — ჰორიზონტალური თამბნეილი, ინტროს საპირისპირო ასიმეტრია ── */
+  #full { margin-bottom: 16px; }
   .card.full-card { border-radius: 8px 34px 8px 34px; padding: 18px 22px 18px 24px; }
   .card.full-card .thumb {
     width: 150px; height: auto; aspect-ratio: 16 / 9;
@@ -224,11 +225,10 @@
   <h1>7 დღე... 7 კითხვა...<br>7 გაცნობიერება... 7 ნაბიჯი</h1>
   <p class="quote">„სასუფეველი ცათაჲ იიძულების და ყოველნი იძულებით მიიტაცებენ მას“ (მათე 11:12)</p>
   <div class="hint">დააჭირე აქ<span>👇</span></div>
+  <div id="full"></div>
   <div id="intro"></div>
   <div class="ornament"><span>7 დღე</span></div>
   <div class="list" id="list"></div>
-  <div class="ornament"><span>შეხვედრა</span></div>
-  <div id="full"></div>
 </div>
 
 <div class="modal" id="modal">
@@ -261,7 +261,7 @@
     { name: "დღე მეშვიდე - ბოლო სერია და მადლიერება",        src: "https://youtu.be/VZABWn7fch4", thumb: "fcghguhijo.jpeg" },
   ];
 
-  // შეხვედრის სრული ვიდეო — ცალკე, დღეების ქვემოთ (ჰორიზონტალური)
+  // შეხვედრის სრული ვიდეო — ცალკე, ყველაზე თავში (ჰორიზონტალური)
   const FULL = { name: "შეხვედრის სრული ვიდეო", src: "https://www.youtube.com/live/xemBGGRda4U", wide: true };
 
   const STORAGE_KEY = "course_progress_v2"; // ნომრის შეცვლა ყველას პროგრესს ანულებს
