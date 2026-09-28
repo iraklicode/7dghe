@@ -160,6 +160,19 @@
   }
   .card:not(.done) .thumb::after { background: rgba(0,0,0,.25); }
 
+  /* ── შეხვედრის სრული ვიდეო — ჰორიზონტალური თამბნეილი, ინტროს საპირისპირო ასიმეტრია ── */
+  .card.full-card { border-radius: 8px 34px 8px 34px; padding: 18px 22px 18px 24px; }
+  .card.full-card .thumb {
+    width: 150px; height: auto; aspect-ratio: 16 / 9;
+    border-radius: 6px 20px 6px 20px;
+    background-size: cover !important; background-position: center !important;
+  }
+  .card.full-card .name { color: var(--gold-2); }
+  @media (max-width: 400px) {
+    .card.full-card { padding: 16px 16px 16px 18px; }
+    .card.full-card .thumb { width: 124px; }
+  }
+
   .ornament {
     display: flex; align-items: center; gap: 14px;
     margin: 40px 0 22px; color: var(--gold);
@@ -199,7 +212,8 @@
     background: #000; border-radius: var(--radius); overflow: hidden;
     border: 1px solid var(--line); box-shadow: 0 20px 60px rgba(0,0,0,.6);
   }
-  .frame.wide { aspect-ratio: 16 / 9; width: min(100%, 900px); }
+  .modal.wide .frame { aspect-ratio: 16 / 9; width: min(100%, 900px, calc(80vh * 16 / 9)); }
+  .modal.wide .modal-head { width: min(100%, 900px, calc(80vh * 16 / 9)); }
   .frame iframe, .frame video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   .soon { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
 </style>
@@ -213,6 +227,8 @@
   <div id="intro"></div>
   <div class="ornament"><span>7 დღე</span></div>
   <div class="list" id="list"></div>
+  <div class="ornament"><span>შეხვედრა</span></div>
+  <div id="full"></div>
 </div>
 
 <div class="modal" id="modal">
@@ -241,9 +257,12 @@
     { name: "დღე მესამე - თავდაჯერებულობის და მოტივაციის წარმოქმნის მექანიზმები", src: "https://youtu.be/LMBfEZzKdtw", thumb: "afad.jpeg" },
     { name: "დღე მეოთხე - ბრაზი და მოთმინება",                src: "https://youtu.be/LBJVac2gklc", thumb: "day4.jpeg" },
     { name: "დღე მეხუთე - გულუბრყვილობამდე მისული ოპტიმიზმი", src: "https://youtu.be/EOJYH9QRMaE", thumb: "husif.jpeg" },
-    { name: "დღე მეექვსე",  src: "", thumb: "gvhbhuij.jpeg" },
-    { name: "დღე მეშვიდე",  src: "", thumb: "fcghguhijo.jpeg" },
+    { name: "დღე მეექვსე - მხოლოდ ერთი პაწაწინა ნაბიჯი",            src: "https://youtu.be/htothFgW9jM", thumb: "gvhbhuij.jpeg" },
+    { name: "დღე მეშვიდე - ბოლო სერია და მადლიერება",        src: "https://youtu.be/VZABWn7fch4", thumb: "fcghguhijo.jpeg" },
   ];
+
+  // შეხვედრის სრული ვიდეო — ცალკე, დღეების ქვემოთ (ჰორიზონტალური)
+  const FULL = { name: "შეხვედრის სრული ვიდეო", src: "https://www.youtube.com/live/xemBGGRda4U", wide: true };
 
   const STORAGE_KEY = "course_progress_v2"; // ნომრის შეცვლა ყველას პროგრესს ანულებს
   // ────────────────────────────────────────────────────────
@@ -256,9 +275,9 @@
   function load() {
     try {
       const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (s && typeof s === "object") return { opened: s.opened || {}, introSeen: !!s.introSeen };
+      if (s && typeof s === "object") return { opened: s.opened || {}, introSeen: !!s.introSeen, fullSeen: !!s.fullSeen };
     } catch (e) {}
-    return { opened: {}, introSeen: false };
+    return { opened: {}, introSeen: false, fullSeen: false };
   }
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
@@ -267,13 +286,14 @@
   const state = load();
   const $ = id => document.getElementById(id);
   const listEl = $("list"), modalEl = $("modal"), frameEl = $("frame");
-  frameEl.classList.toggle("wide", !VERTICAL);
   listEl.classList.toggle("vertical-thumbs", VERTICAL);
 
   // i = -1 შესავალია, 0..6 — დღეები
-  const item = i => i === -1 ? INTRO : DAYS[i];
+  const item = i => i === -1 ? INTRO : i === -2 ? FULL : DAYS[i];
+  const isDone = i => i === -1 ? state.introSeen : i === -2 ? state.fullSeen : !!state.opened[i];
+  const baseClass = i => i === -1 ? "card intro-card" : i === -2 ? "card full-card" : "card";
 
-  const ytId = src => ((src || "").match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/) || [])[1];
+  const ytId = src => ((src || "").match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([\w-]{11})/) || [])[1];
 
   function embed(src) {
     if (!src) return `<div class="soon">ვიდეო მალე დაემატება</div>`;
@@ -286,11 +306,13 @@
 
   function openItem(i) {
     if (i === -1) state.introSeen = true;
+    else if (i === -2) state.fullSeen = true;
     else if (!state.opened[i]) state.opened[i] = Date.now();
     save();
     const it = item(i);
     $("mTitle").textContent = it.name;
     $("mSub").textContent = it.title || "";
+    modalEl.classList.toggle("wide", !VERTICAL || !!it.wide);
     frameEl.innerHTML = embed(it.src);
     modalEl.classList.add("show");
     document.body.style.overflow = "hidden";
@@ -309,10 +331,11 @@
   const cardHtml = i => {
     const it = item(i), id = ytId(it.src);
     const bg = it.thumb ? ` style="background-image:url('${it.thumb}')"`
-      : id ? ` style="background-image:url('https://i.ytimg.com/vi/${id}/hqdefault.jpg')"` : "";
+      : id ? ` style="background-image:url('https://i.ytimg.com/vi/${id}/${it.wide ? "maxresdefault" : "hqdefault"}.jpg')"` : "";
     return `<button class="card" data-i="${i}"><span class="thumb${it.thumb ? " photo" : ""}"${bg}><span class="ico"></span></span><span class="text"><div class="name">${item(i).name}</div><div class="status"></div></span></button>`;
   };
   $("intro").innerHTML = cardHtml(-1);
+  $("full").innerHTML = cardHtml(-2);
   $("intro").classList.toggle("vertical-thumbs", VERTICAL);
   listEl.innerHTML = DAYS.map((_, i) => cardHtml(i)).join("");
   const cards = [...document.querySelectorAll("[data-i]")];
@@ -326,8 +349,8 @@
   function render() {
     cards.forEach(card => {
       const i = Number(card.dataset.i);
-      const done = i === -1 ? state.introSeen : !!state.opened[i];
-      set(card, "className", (i === -1 ? "card intro-card" : "card") + (done ? " done" : ""));
+      const done = isDone(i);
+      set(card, "className", baseClass(i) + (done ? " done" : ""));
       const ico = done ? ICON.done : ICON.play;
       const icoEl = card.querySelector(".ico");
       if (icoEl.dataset.v !== ico) { icoEl.innerHTML = ico; icoEl.dataset.v = ico; }
